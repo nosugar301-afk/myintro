@@ -4,30 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>자기소개하기</title>
-  
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
-  <link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%EC%9E%90%EA%B8%B0%EC%86%8C%EA%B0%9C%22%2C%22short_name%22%3A%22%EC%9E%90%EA%B8%B0%EC%86%8C%EA%B0%9C%22%2C%22display%22%3A%22standalone%22%2C%22start_url%22%3A%22.%2Findex.html%22%7D'>
-
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Noto Sans KR', sans-serif; }
     
     .icon-item {
       cursor: grab;
       transition: all 0.2s ease;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
       user-select: none;
-      touch-action: none; 
+      -webkit-user-select: none;
+      touch-action: none;
     }
     
     .icon-item:active {
@@ -94,66 +81,71 @@
       gap: 12px;
     }
   </style>
-  <style>body { box-sizing: border-box; overscroll-behavior-y: contain; }</style>
+  <style>body { box-sizing: border-box; overscroll-behavior-y: none; }</style>
  </head>
- <body class="h-full overflow-auto">
+ <body class="h-full overflow-hidden">
   <div id="app" class="h-full p-4 md:p-6 flex flex-col" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-   
-   <div class="flex items-center justify-between mb-4">
+   <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
     <div>
      <h1 id="app-title" class="text-2xl md:text-3xl font-black text-white drop-shadow-lg">🌟 자기소개하기 🌟</h1>
-     <p class="text-white/80 text-xs md:text-sm">아이콘을 빈칸에 끌어다 놓아보세요!</p>
+     <p class="text-white/80 text-xs md:text-sm">아이콘을 빈칸에 드래그해서 넣어보세요!</p>
     </div>
-    <button id="teacher-panel-btn" class="bg-white/90 hover:bg-white text-purple-600 font-bold py-2 px-4 rounded-full shadow-lg flex items-center gap-2 transition-all flex-shrink-0"> 👨‍🏫 교사음성 </button>
+    <div class="flex gap-2">
+     <button id="clear-db-btn" class="bg-red-500/90 hover:bg-red-500 text-white font-bold py-2 px-3 md:px-4 rounded-full shadow-lg flex items-center gap-2 transition-all flex-shrink-0 text-sm"> 🗑️ 전체 녹음 초기화 </button>
+     <button id="teacher-panel-btn" class="bg-white/90 hover:bg-white text-purple-600 font-bold py-2 px-3 md:px-4 rounded-full shadow-lg flex items-center gap-2 transition-all flex-shrink-0 text-sm md:text-base"> 👨‍🏫 교사음성 </button>
+    </div>
    </div>
    
    <div class="flex gap-4 flex-1 overflow-hidden">
-    
-    <div class="flex flex-col flex-1 gap-4 overflow-auto">
-     <div id="capture-area" class="bg-white rounded-2xl shadow-2xl p-4 md:p-6 flex-shrink-0">
+    <div class="flex flex-col flex-1 gap-4 overflow-hidden">
+     <div class="bg-white rounded-2xl shadow-2xl p-4 md:p-6 flex-shrink-0">
       <div class="sentence-container text-xl md:text-2xl font-bold text-gray-800">
        <span id="sentence-prefix" class="text-purple-600">나는</span>
        <div id="drop-zone" class="drop-zone inline-flex items-center justify-center bg-gray-100 border-4 border-dashed border-gray-300 rounded-xl px-4 py-3 mx-2">
         <span id="drop-placeholder" class="text-gray-400 text-sm md:text-base">여기에 놓기</span>
         <div id="dropped-item" class="hidden flex-col items-center">
-         <span id="dropped-icon" class="text-3xl md:text-4xl"></span> 
-         <span id="dropped-name" class="text-xs md:text-sm font-medium text-gray-600 mt-1"></span>
+         <span id="dropped-icon" class="text-3xl md:text-4xl"></span> <span id="dropped-name" class="text-xs md:text-sm font-medium text-gray-600 mt-1"></span>
         </div>
-       </div>
-       <span id="sentence-suffix" class="text-purple-600">를 좋아해요.</span>
+       </div><span id="sentence-suffix" class="text-purple-600">를 좋아해요.</span>
       </div>
-      
-      <div class="flex gap-2 mt-4">
-       <button id="speak-btn" class="flex-1 bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold py-3 px-4 rounded-xl text-sm md:text-base shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none" disabled> 🔊 읽어주기 </button>
-       <button id="capture-btn" class="flex-1 bg-gradient-to-r from-teal-400 to-emerald-500 text-white font-bold py-3 px-4 rounded-xl text-sm md:text-base shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none" disabled> 📸 사진 저장 </button>
-      </div>
+      <button id="speak-btn" class="mt-4 w-full bg-gradient-to-r from-pink-500 to-orange-400 text-white font-bold py-3 px-4 rounded-xl text-sm md:text-base shadow-lg hover:shadow-xl transform hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none" disabled> 🔊 문장 읽어주기 </button>
      </div>
      
-     <div class="bg-white/95 rounded-2xl shadow-2xl p-3 md:p-4 flex-1 overflow-auto">
+     <div class="bg-white/95 rounded-2xl shadow-2xl p-3 md:p-4 flex-1 overflow-y-auto">
       <div class="flex items-center justify-between mb-3">
        <h2 class="text-sm md:text-base font-bold text-gray-700">🎨 좋아하는 것</h2>
-       <div class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">길게 누르면 녹음 🎤</div>
+       <div class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+        길게 누르면 녹음 🎤
+       </div>
       </div>
-      <div id="icons-grid" class="grid grid-cols-6 md:grid-cols-8 gap-2 md:gap-3">
+      <div id="icons-grid" class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 md:gap-3 pb-10">
        </div>
      </div>
     </div>
     
-    <div class="bg-white/95 rounded-2xl shadow-2xl p-4 md:p-5 flex flex-col justify-center items-center flex-shrink-0 w-28 md:w-32">
-     <button id="reset-btn" class="w-full bg-gray-400 text-white font-bold py-2 md:py-3 px-3 rounded-xl text-xs md:text-sm shadow-lg hover:shadow-xl hover:bg-gray-500 transform hover:scale-105 transition-all" style="display: none;"> 🔄 다시 선택 </button>
-     <div id="reset-hidden-msg" class="text-center text-gray-500 text-xs md:text-sm py-4">아이콘을 선택하면 초기화 버튼이 나타나요!</div>
+    <div class="bg-white/95 rounded-2xl shadow-2xl p-4 md:p-5 flex flex-col justify-center items-center flex-shrink-0 w-24 md:w-32">
+     <button id="reset-btn" class="w-full bg-gray-400 text-white font-bold py-2 md:py-3 px-2 md:px-3 rounded-xl text-xs md:text-sm shadow-lg hover:shadow-xl hover:bg-gray-500 transform hover:scale-105 transition-all" style="display: none;"> 🔄 선택 취소 </button>
+     <div id="reset-hidden-msg" class="text-center text-gray-500 text-xs md:text-sm py-4">
+      아이콘을 선택하면<br>선택 취소 버튼이<br>나타나요!
+     </div>
     </div>
    </div>
-   
+
    <div id="record-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-3xl p-6 mx-4 max-w-sm w-full shadow-2xl">
      <div class="text-center">
       <div id="modal-icon" class="text-6xl mb-3"></div>
       <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-4"></h3>
       <div id="record-status" class="mb-4">
-       <div id="status-ready" class="text-gray-600">버튼을 눌러 녹음을 시작하세요</div>
-       <div id="status-recording" class="hidden text-red-500 font-bold">🔴 녹음 중...</div>
-       <div id="status-recorded" class="hidden text-green-500 font-bold">✅ 녹음 완료!</div>
+       <div id="status-ready" class="text-gray-600">
+        버튼을 눌러 녹음을 시작하세요
+       </div>
+       <div id="status-recording" class="hidden text-red-500 font-bold">
+        🔴 녹음 중...
+       </div>
+       <div id="status-recorded" class="hidden text-green-500 font-bold">
+        ✅ 녹음 완료 (저장됨)
+       </div>
       </div>
       <div class="flex gap-3 justify-center mb-4">
        <button id="record-btn" class="bg-red-500 text-white font-bold py-3 px-6 rounded-full text-lg shadow-lg hover:bg-red-600 transition-all"> 🎤 녹음 </button> 
@@ -174,7 +166,9 @@
        <button id="record-prefix-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-full text-sm shadow-lg hover:bg-red-600 transition-all"> 🎤 녹음 </button> 
        <button id="play-prefix-btn" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-full text-sm shadow-lg hover:bg-blue-600 transition-all hidden"> ▶️ 재생 </button>
       </div>
-      <div id="prefix-status" class="text-sm text-gray-500 text-center">녹음되지 않음</div>
+      <div id="prefix-status" class="text-sm text-gray-500 text-center">
+       녹음되지 않음
+      </div>
      </div>
      <div class="border-t-2 border-gray-300 my-4"></div>
      <div class="mb-6">
@@ -184,7 +178,9 @@
        <button id="record-suffix-btn" class="bg-red-500 text-white font-bold py-2 px-4 rounded-full text-sm shadow-lg hover:bg-red-600 transition-all"> 🎤 녹음 </button> 
        <button id="play-suffix-btn" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-full text-sm shadow-lg hover:bg-blue-600 transition-all hidden"> ▶️ 재생 </button>
       </div>
-      <div id="suffix-status" class="text-sm text-gray-500 text-center">녹음되지 않음</div>
+      <div id="suffix-status" class="text-sm text-gray-500 text-center">
+       녹음되지 않음
+      </div>
      </div>
      <button id="close-teacher-modal-btn" class="w-full bg-purple-500 text-white font-bold py-3 px-6 rounded-full hover:bg-purple-600 transition-all"> 완료 </button>
     </div>
@@ -196,19 +192,121 @@
   </div>
 
   <script>
+    // --- IndexedDB 데이터베이스 설정 (새로고침 시 유지용) ---
+    const DB_NAME = "AudioRecordingsDB";
+    const STORE_NAME = "audios";
+    let db;
+
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onerror = (event) => reject("IndexedDB 권한 오류");
+        request.onsuccess = (event) => {
+          db = event.target.result;
+          resolve(db);
+        };
+        request.onupgradeneeded = (event) => {
+          db = event.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME);
+          }
+        };
+      });
+    }
+
+    function saveAudioToDB(id, blob) {
+      if (!db) return;
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      store.put(blob, id);
+    }
+
+    function loadAudiosFromDB() {
+      if (!db) return;
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.getAll();
+      const requestKeys = store.getAllKeys();
+
+      request.onsuccess = () => {
+        requestKeys.onsuccess = () => {
+          const keys = requestKeys.result;
+          const values = request.result;
+          
+          keys.forEach((key, index) => {
+            const blob = values[index];
+            const url = URL.createObjectURL(blob);
+            
+            if (key === 'teacher_prefix') {
+              teacherPrefixAudio = url;
+              document.getElementById('prefix-status').textContent = '✅ 녹음 완료 (저장됨)';
+              document.getElementById('play-prefix-btn').classList.remove('hidden');
+            } else if (key === 'teacher_suffix') {
+              teacherSuffixAudio = url;
+              document.getElementById('suffix-status').textContent = '✅ 녹음 완료 (저장됨)';
+              document.getElementById('play-suffix-btn').classList.remove('hidden');
+            } else {
+              recordedAudios[key] = url;
+              const iconEl = document.querySelector(`[data-icon-id="${key}"]`);
+              if (iconEl) iconEl.classList.add('has-recording');
+            }
+          });
+        };
+      };
+    }
+
+    function clearAllAudiosDB() {
+      if (!confirm("저장된 교사 음성과 학생 녹음 데이터가 모두 삭제됩니다. 계속하시겠습니까?")) return;
+      
+      if (!db) return;
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      store.clear();
+      
+      tx.oncomplete = () => {
+        // 메모리 초기화
+        recordedAudios = {};
+        teacherPrefixAudio = null;
+        teacherSuffixAudio = null;
+        
+        // UI 초기화
+        document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('has-recording'));
+        document.getElementById('prefix-status').textContent = '녹음되지 않음';
+        document.getElementById('play-prefix-btn').classList.add('hidden');
+        document.getElementById('suffix-status').textContent = '녹음되지 않음';
+        document.getElementById('play-suffix-btn').classList.add('hidden');
+        
+        showToast("모든 녹음 데이터가 완전히 초기화되었습니다! 🗑️");
+      };
+    }
+    // ------------------------------------------------
+
+    // 아이콘 데이터
     const iconData = [
-      { id: 'pizza', emoji: '🍕', name: '피자' }, { id: 'hamburger', emoji: '🍔', name: '햄버거' },
-      { id: 'icecream', emoji: '🍦', name: '아이스크림' }, { id: 'cake', emoji: '🎂', name: '케이크' },
-      { id: 'apple', emoji: '🍎', name: '사과' }, { id: 'banana', emoji: '🍌', name: '바나나' },
-      { id: 'rice', emoji: '🍚', name: '밥' }, { id: 'ramen', emoji: '🍜', name: '라면' },
-      { id: 'dog', emoji: '🐶', name: '강아지' }, { id: 'cat', emoji: '🐱', name: '고양이' },
-      { id: 'rabbit', emoji: '🐰', name: '토끼' }, { id: 'bear', emoji: '🐻', name: '곰' },
-      { id: 'soccer', emoji: '⚽', name: '축구' }, { id: 'basketball', emoji: '🏀', name: '농구' },
-      { id: 'swimming', emoji: '🏊', name: '수영' }, { id: 'bike', emoji: '🚴', name: '자전거' },
-      { id: 'book', emoji: '📚', name: '책' }, { id: 'game', emoji: '🎮', name: '게임' },
-      { id: 'music', emoji: '🎵', name: '음악' }, { id: 'painting', emoji: '🎨', name: '그림' },
-      { id: 'movie', emoji: '🎬', name: '영화' }, { id: 'travel', emoji: '✈️', name: '여행' },
-      { id: 'flower', emoji: '🌸', name: '꽃' }, { id: 'star', emoji: '⭐', name: '별' }
+      { id: 'pizza', emoji: '🍕', name: '피자' },
+      { id: 'hamburger', emoji: '🍔', name: '햄버거' },
+      { id: 'icecream', emoji: '🍦', name: '아이스크림' },
+      { id: 'cake', emoji: '🎂', name: '케이크' },
+      { id: 'apple', emoji: '🍎', name: '사과' },
+      { id: 'banana', emoji: '🍌', name: '바나나' },
+      { id: 'rice', emoji: '🍚', name: '밥' },
+      { id: 'ramen', emoji: '🍜', name: '라면' },
+      { id: 'dog', emoji: '🐶', name: '강아지' },
+      { id: 'cat', emoji: '🐱', name: '고양이' },
+      { id: 'rabbit', emoji: '🐰', name: '토끼' },
+      { id: 'bear', emoji: '🐻', name: '곰' },
+      { id: 'soccer', emoji: '⚽', name: '축구' },
+      { id: 'basketball', emoji: '🏀', name: '농구' },
+      { id: 'swimming', emoji: '🏊', name: '수영' },
+      { id: 'bike', emoji: '🚴', name: '자전거' },
+      { id: 'book', emoji: '📚', name: '책' },
+      { id: 'game', emoji: '🎮', name: '게임' },
+      { id: 'music', emoji: '🎵', name: '음악' },
+      { id: 'painting', emoji: '🎨', name: '그림' },
+      { id: 'movie', emoji: '🎬', name: '영화' },
+      { id: 'travel', emoji: '✈️', name: '여행' },
+      { id: 'flower', emoji: '🌸', name: '꽃' },
+      { id: 'star', emoji: '⭐', name: '별' }
     ];
 
     let recordedAudios = {}; 
@@ -222,14 +320,13 @@
 
     const defaultConfig = {
       sentence_prefix: '나는',
-      sentence_suffix: '를 좋아해요.',
-      primary_color: '#667eea',
-      font_family: 'Noto Sans KR'
+      sentence_suffix: '를 좋아해요.'
     };
 
-    function showToast(message, duration = 2000) {
+    function showToast(message, duration = 2500) {
       const toast = document.getElementById('toast');
-      document.getElementById('toast-message').textContent = message;
+      const toastMessage = document.getElementById('toast-message');
+      toastMessage.textContent = message;
       toast.classList.remove('hidden');
       setTimeout(() => toast.classList.add('hidden'), duration);
     }
@@ -256,34 +353,59 @@
         let pressTimer = null;
         let isDragging = false;
 
+        // 데스크톱 드래그 앤 드롭
         iconEl.addEventListener('dragstart', (e) => {
           isDragging = true;
           e.dataTransfer.setData('text/plain', icon.id);
           iconEl.classList.add('dragging');
         });
-
         iconEl.addEventListener('dragend', () => {
           isDragging = false;
           iconEl.classList.remove('dragging');
         });
 
+        // 태블릿/모바일 터치 이벤트 (길게 누르기)
         iconEl.addEventListener('touchstart', (e) => {
-          pressTimer = setTimeout(() => { if (!isDragging) openRecordModal(icon); }, 500);
+          isDragging = false;
+          pressTimer = setTimeout(() => {
+            if (!isDragging) openRecordModal(icon);
+          }, 600);
         }, { passive: true });
 
         iconEl.addEventListener('touchend', (e) => {
-          if (pressTimer) { clearTimeout(pressTimer); if (!isDragging) playIconAudio(icon); }
+          if (pressTimer) {
+            clearTimeout(pressTimer);
+            if (!isDragging && e.cancelable === false) { 
+              playIconAudio(icon);
+            }
+          }
         });
 
-        iconEl.addEventListener('touchmove', () => { if (pressTimer) clearTimeout(pressTimer); }, { passive: true });
+        iconEl.addEventListener('touchmove', () => {
+          isDragging = true;
+          if (pressTimer) clearTimeout(pressTimer);
+        }, { passive: true });
 
+        // 데스크톱 클릭 이벤트 (길게 누르기)
         iconEl.addEventListener('mousedown', () => {
-          pressTimer = setTimeout(() => { if (!isDragging) openRecordModal(icon); }, 500);
+          isDragging = false;
+          pressTimer = setTimeout(() => {
+            if (!isDragging) openRecordModal(icon);
+          }, 600);
         });
 
-        iconEl.addEventListener('mouseup', () => { if (pressTimer) clearTimeout(pressTimer); });
-        iconEl.addEventListener('mouseleave', () => { if (pressTimer) clearTimeout(pressTimer); });
-        iconEl.addEventListener('click', (e) => { if (!isDragging) playIconAudio(icon); });
+        iconEl.addEventListener('mouseup', () => {
+          if (pressTimer) clearTimeout(pressTimer);
+        });
+
+        iconEl.addEventListener('mouseleave', () => {
+          isDragging = true;
+          if (pressTimer) clearTimeout(pressTimer);
+        });
+
+        iconEl.addEventListener('click', (e) => {
+          if (!isDragging) playIconAudio(icon);
+        });
 
         grid.appendChild(iconEl);
       });
@@ -291,256 +413,327 @@
 
     function playIconAudio(icon) {
       if (recordedAudios[icon.id]) {
-        new Audio(recordedAudios[icon.id]).play().catch(() => speakText(icon.name));
-      } else { speakText(icon.name); }
+        const audio = new Audio(recordedAudios[icon.id]);
+        audio.play().catch(() => speakText(icon.name));
+      } else {
+        speakText(icon.name);
+      }
     }
 
     function speakText(text) {
       return new Promise((resolve) => {
         if ('speechSynthesis' in window) {
           const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = 'ko-KR'; utterance.rate = 0.9;
-          utterance.onend = resolve; utterance.onerror = resolve;
+          utterance.lang = 'ko-KR';
+          utterance.rate = 0.9;
+          utterance.onend = resolve;
+          utterance.onerror = resolve;
           speechSynthesis.speak(utterance);
-        } else { resolve(); }
+        } else {
+          resolve();
+        }
       });
     }
 
     function openRecordModal(icon) {
       currentRecordingIconId = icon.id;
+      const modal = document.getElementById('record-modal');
       document.getElementById('modal-icon').textContent = icon.emoji;
       document.getElementById('modal-title').textContent = `"${icon.name}" 녹음하기`;
+
       document.getElementById('status-ready').classList.remove('hidden');
       document.getElementById('status-recording').classList.add('hidden');
       document.getElementById('status-recorded').classList.add('hidden');
-      
+
       const playBtn = document.getElementById('play-recorded-btn');
-      recordedAudios[icon.id] ? playBtn.classList.remove('hidden') : playBtn.classList.add('hidden');
-      document.getElementById('record-modal').classList.remove('hidden');
+      if (recordedAudios[icon.id]) {
+        playBtn.classList.remove('hidden');
+        document.getElementById('status-ready').classList.add('hidden');
+        document.getElementById('status-recorded').classList.remove('hidden');
+      } else {
+        playBtn.classList.add('hidden');
+      }
+      modal.classList.remove('hidden');
     }
 
     function closeRecordModal() {
       document.getElementById('record-modal').classList.add('hidden');
       currentRecordingIconId = null;
-      if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
     }
 
-    function openTeacherModal() { document.getElementById('teacher-modal').classList.remove('hidden'); }
+    function openTeacherModal() {
+      document.getElementById('teacher-modal').classList.remove('hidden');
+    }
+
     function closeTeacherModal() {
       document.getElementById('teacher-modal').classList.add('hidden');
-      if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
       currentTeacherRecordingPart = null;
     }
 
     async function toggleRecording() {
       const recordBtn = document.getElementById('record-btn');
+
       if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
-        recordBtn.textContent = '🎤 녹음'; recordBtn.classList.remove('recording');
+        recordBtn.textContent = '🎤 녹음';
+        recordBtn.classList.remove('recording');
       } else {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
           mediaRecorder = new MediaRecorder(stream);
           audioChunks = [];
+
           mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+
           mediaRecorder.onstop = () => {
-            const audioUrl = URL.createObjectURL(new Blob(audioChunks, { type: 'audio/webm' }));
+            const mimeType = mediaRecorder.mimeType || 'audio/mp4';
+            const audioBlob = new Blob(audioChunks, { type: mimeType });
+            
+            // 데이터베이스에 오디오 원본(Blob) 저장
+            saveAudioToDB(currentRecordingIconId, audioBlob);
+            
+            const audioUrl = URL.createObjectURL(audioBlob);
             recordedAudios[currentRecordingIconId] = audioUrl;
+
             const iconEl = document.querySelector(`[data-icon-id="${currentRecordingIconId}"]`);
             if (iconEl) iconEl.classList.add('has-recording');
+
             document.getElementById('status-ready').classList.add('hidden');
+            document.getElementById('status-recording').classList.add('hidden');
             document.getElementById('status-recorded').classList.remove('hidden');
             document.getElementById('play-recorded-btn').classList.remove('hidden');
+
             stream.getTracks().forEach(track => track.stop());
-            showToast('녹음 완료! 🎉');
+            showToast('녹음이 안전하게 저장되었어요! 🎉 (새로고침해도 유지됩니다)');
           };
+
           mediaRecorder.start();
+
           document.getElementById('status-ready').classList.add('hidden');
           document.getElementById('status-recording').classList.remove('hidden');
-          recordBtn.textContent = '⏹️ 중지'; recordBtn.classList.add('recording');
-        } catch (err) { showToast('마이크 접근 권한이 필요해요 🎤'); }
+          document.getElementById('status-recorded').classList.add('hidden');
+
+          recordBtn.textContent = '⏹️ 중지';
+          recordBtn.classList.add('recording');
+
+        } catch (err) {
+          showToast('마이크 접근 권한이 필요해요 🎤');
+          console.error(err);
+        }
       }
     }
 
     async function toggleTeacherRecording(part) {
       const recordBtn = part === 'prefix' ? document.getElementById('record-prefix-btn') : document.getElementById('record-suffix-btn');
+
       if (mediaRecorder && mediaRecorder.state === 'recording') {
         mediaRecorder.stop();
-        recordBtn.textContent = '🎤 녹음'; recordBtn.classList.remove('recording');
+        recordBtn.textContent = '🎤 녹음';
+        recordBtn.classList.remove('recording');
       } else {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
           mediaRecorder = new MediaRecorder(stream);
-          audioChunks = []; currentTeacherRecordingPart = part;
+          audioChunks = [];
+          currentTeacherRecordingPart = part;
+
           mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+
           mediaRecorder.onstop = () => {
-            const audioUrl = URL.createObjectURL(new Blob(audioChunks, { type: 'audio/webm' }));
+            const mimeType = mediaRecorder.mimeType || 'audio/mp4';
+            const audioBlob = new Blob(audioChunks, { type: mimeType });
+            const audioUrl = URL.createObjectURL(audioBlob);
+
             if (part === 'prefix') {
+              saveAudioToDB('teacher_prefix', audioBlob); // DB에 저장
               teacherPrefixAudio = audioUrl;
-              document.getElementById('prefix-status').textContent = '✅ 녹음 완료';
+              document.getElementById('prefix-status').textContent = '✅ 녹음 완료 (저장됨)';
               document.getElementById('play-prefix-btn').classList.remove('hidden');
             } else {
+              saveAudioToDB('teacher_suffix', audioBlob); // DB에 저장
               teacherSuffixAudio = audioUrl;
-              document.getElementById('suffix-status').textContent = '✅ 녹음 완료';
+              document.getElementById('suffix-status').textContent = '✅ 녹음 완료 (저장됨)';
               document.getElementById('play-suffix-btn').classList.remove('hidden');
             }
+
             stream.getTracks().forEach(track => track.stop());
-            showToast('교사 음성 저장 완료! 🎉');
+            showToast('교사 음성이 안전하게 저장되었어요! 🎉 (새로고침해도 유지됩니다)');
           };
+
           mediaRecorder.start();
-          recordBtn.textContent = '⏹️ 중지'; recordBtn.classList.add('recording');
-        } catch (err) { showToast('마이크 접근 권한이 필요해요 🎤'); }
+          recordBtn.textContent = '⏹️ 중지';
+          recordBtn.classList.add('recording');
+
+        } catch (err) {
+          showToast('마이크 접근 권한이 필요해요 🎤');
+        }
       }
     }
 
     function playRecordedAudio() {
-      if (currentRecordingIconId && recordedAudios[currentRecordingIconId]) { new Audio(recordedAudios[currentRecordingIconId]).play(); }
+      if (currentRecordingIconId && recordedAudios[currentRecordingIconId]) {
+        const audio = new Audio(recordedAudios[currentRecordingIconId]);
+        audio.play();
+      }
     }
 
     function playTeacherAudio(part) {
-      if (part === 'prefix' && teacherPrefixAudio) new Audio(teacherPrefixAudio).play();
-      else if (part === 'suffix' && teacherSuffixAudio) new Audio(teacherSuffixAudio).play();
+      if (part === 'prefix' && teacherPrefixAudio) {
+        new Audio(teacherPrefixAudio).play();
+      } else if (part === 'suffix' && teacherSuffixAudio) {
+        new Audio(teacherSuffixAudio).play();
+      }
     }
 
-    let draggedElement = null;
     let draggedIconId = null;
 
     function setupDropZone() {
       const dropZone = document.getElementById('drop-zone');
-      
-      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('drag-over');
+      });
       dropZone.addEventListener('drop', (e) => {
-        e.preventDefault(); dropZone.classList.remove('drag-over');
-        handleDrop(e.dataTransfer.getData('text/plain'));
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        const iconId = e.dataTransfer.getData('text/plain');
+        handleDrop(iconId);
       });
 
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
-      document.addEventListener('touchend', handleTouchEnd);
-    }
+      document.addEventListener('touchmove', (e) => {
+        const touch = e.touches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        
+        if (!draggedIconId && e.target.closest('.icon-item')) {
+           draggedIconId = e.target.closest('.icon-item').getAttribute('data-icon-id');
+        }
 
-    function handleTouchMove(e) {
-      const touch = e.touches[0];
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (target && (target.id === 'drop-zone' || target.closest('#drop-zone'))) {
+          dropZone.classList.add('drag-over');
+        } else {
+          dropZone.classList.remove('drag-over');
+        }
+      }, { passive: false });
 
-      if (target && target.closest('.icon-item')) {
-        const iconEl = target.closest('.icon-item');
-        draggedElement = iconEl;
-        draggedIconId = iconEl.getAttribute('data-icon-id');
-      }
+      document.addEventListener('touchend', (e) => {
+        if (!draggedIconId) return;
+        const touch = e.changedTouches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
 
-      const dropZone = document.getElementById('drop-zone');
-      
-      if (target && (target === dropZone || dropZone.contains(target))) {
-        dropZone.classList.add('drag-over');
-      } else {
+        if (target && (target.id === 'drop-zone' || target.closest('#drop-zone'))) {
+          handleDrop(draggedIconId);
+        }
+
         dropZone.classList.remove('drag-over');
-      }
-    }
-
-    function handleTouchEnd(e) {
-      if (!draggedIconId) return;
-
-      const touch = e.changedTouches[0];
-      const target = document.elementFromPoint(touch.clientX, touch.clientY);
-      const dropZone = document.getElementById('drop-zone');
-
-      if (target && (target === dropZone || dropZone.contains(target))) {
-        handleDrop(draggedIconId);
-      }
-
-      dropZone.classList.remove('drag-over');
-      draggedElement = null;
-      draggedIconId = null;
+        draggedIconId = null;
+      });
     }
 
     function handleDrop(iconId) {
       const icon = iconData.find(i => i.id === iconId);
       if (!icon) return;
+
       droppedIconId = iconId;
+
       document.getElementById('drop-placeholder').classList.add('hidden');
       document.getElementById('dropped-item').classList.remove('hidden');
       document.getElementById('dropped-icon').textContent = icon.emoji;
       document.getElementById('dropped-name').textContent = icon.name;
-      document.getElementById('drop-zone').classList.add('has-item');
       
+      document.getElementById('drop-zone').classList.add('has-item');
       document.getElementById('speak-btn').disabled = false;
-      document.getElementById('capture-btn').disabled = false;
       document.getElementById('reset-btn').style.display = 'block';
       document.getElementById('reset-hidden-msg').style.display = 'none';
     }
 
     function resetSelection() {
       droppedIconId = null;
+      
       const dropZone = document.getElementById('drop-zone');
       dropZone.classList.remove('has-item', 'drag-over');
       document.getElementById('drop-placeholder').classList.remove('hidden');
       document.getElementById('dropped-item').classList.add('hidden');
       
       document.getElementById('speak-btn').disabled = true;
-      document.getElementById('capture-btn').disabled = true;
       document.getElementById('reset-btn').style.display = 'none';
       document.getElementById('reset-hidden-msg').style.display = 'block';
-      showToast('초기화되었어요! 다른 아이콘을 선택해보세요! 🎨');
+
+      showToast('선택이 취소되었습니다. 다른 아이콘을 올려보세요! 🎨');
     }
 
     async function speakFullSentence() {
       if (!droppedIconId) return;
       const icon = iconData.find(i => i.id === droppedIconId);
       if (!icon) return;
-      const prefix = defaultConfig.sentence_prefix; const suffix = defaultConfig.sentence_suffix;
 
+      const prefix = defaultConfig.sentence_prefix;
+      const suffix = defaultConfig.sentence_suffix;
+
+      // 1. 앞부분 재생
       if (teacherPrefixAudio) {
         await new Promise((resolve) => {
-          const audio = new Audio(teacherPrefixAudio); audio.onended = resolve; audio.onerror = () => speakText(prefix).then(resolve); audio.play().catch(() => speakText(prefix).then(resolve));
+          const audio = new Audio(teacherPrefixAudio);
+          audio.onended = resolve;
+          audio.onerror = () => speakText(prefix).then(resolve);
+          audio.play().catch(() => speakText(prefix).then(resolve));
         });
-      } else { await speakText(prefix); }
+      } else {
+        await speakText(prefix);
+      }
 
+      // 2. 단어 재생
       if (recordedAudios[droppedIconId]) {
         await new Promise((resolve) => {
-          const audio = new Audio(recordedAudios[droppedIconId]); audio.onended = resolve; audio.onerror = () => speakText(icon.name).then(resolve); audio.play().catch(() => speakText(icon.name).then(resolve));
+          const audio = new Audio(recordedAudios[droppedIconId]);
+          audio.onended = resolve;
+          audio.onerror = () => speakText(icon.name).then(resolve);
+          audio.play().catch(() => speakText(icon.name).then(resolve));
         });
-      } else { await speakText(icon.name); }
+      } else {
+        await speakText(icon.name);
+      }
 
+      // 3. 뒷부분 재생
       if (teacherSuffixAudio) {
         await new Promise((resolve) => {
-          const audio = new Audio(teacherSuffixAudio); audio.onended = resolve; audio.onerror = () => speakText(suffix).then(resolve); audio.play().catch(() => speakText(suffix).then(resolve));
+          const audio = new Audio(teacherSuffixAudio);
+          audio.onended = resolve;
+          audio.onerror = () => speakText(suffix).then(resolve);
+          audio.play().catch(() => speakText(suffix).then(resolve));
         });
-      } else { await speakText(suffix); }
-    }
-
-    async function captureScreen() {
-      const captureArea = document.getElementById('capture-area');
-      const captureBtn = document.getElementById('capture-btn');
-      
-      try {
-        captureBtn.textContent = '⏳ 저장 중...';
-        const canvas = await html2canvas(captureArea, {
-          backgroundColor: '#ffffff',
-          scale: 2
-        });
-        
-        const link = document.createElement('a');
-        link.download = '자기소개_완성.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        
-        showToast('멋진 자기소개가 사진으로 저장되었어요! 📸');
-      } catch (err) {
-        showToast('사진 저장에 실패했어요 😢');
-      } finally {
-        captureBtn.textContent = '📸 사진 저장';
+      } else {
+        await speakText(suffix);
       }
     }
 
     function init() {
-      createIconsGrid(); setupDropZone();
+      createIconsGrid();
+      setupDropZone();
+      
+      // IndexedDB 초기화 및 기존 녹음 불러오기
+      initDB().then(() => {
+        loadAudiosFromDB();
+      }).catch(err => {
+        console.error("오류:", err);
+      });
+
+      // 이벤트 리스너 등록
       document.getElementById('record-btn').addEventListener('click', toggleRecording);
       document.getElementById('play-recorded-btn').addEventListener('click', playRecordedAudio);
       document.getElementById('close-modal-btn').addEventListener('click', closeRecordModal);
       document.getElementById('speak-btn').addEventListener('click', speakFullSentence);
-      document.getElementById('capture-btn').addEventListener('click', captureScreen);
       document.getElementById('reset-btn').addEventListener('click', resetSelection);
+      document.getElementById('clear-db-btn').addEventListener('click', clearAllAudiosDB);
 
       document.getElementById('teacher-panel-btn').addEventListener('click', openTeacherModal);
       document.getElementById('close-teacher-modal-btn').addEventListener('click', closeTeacherModal);
@@ -549,10 +742,16 @@
       document.getElementById('record-suffix-btn').addEventListener('click', () => toggleTeacherRecording('suffix'));
       document.getElementById('play-suffix-btn').addEventListener('click', () => playTeacherAudio('suffix'));
 
-      document.getElementById('record-modal').addEventListener('click', (e) => { if (e.target.id === 'record-modal') closeRecordModal(); });
-      document.getElementById('teacher-modal').addEventListener('click', (e) => { if (e.target.id === 'teacher-modal') closeTeacherModal(); });
+      // 모달 외부 클릭 시 닫기
+      document.getElementById('record-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'record-modal') closeRecordModal();
+      });
+      document.getElementById('teacher-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'teacher-modal') closeTeacherModal();
+      });
     }
 
+    // 앱 시작
     init();
   </script>
  </body>
