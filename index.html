@@ -8,11 +8,12 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22%EC%9E%90%EA%B8%B0%EC%86%8C%EA%B0%9C%22%2C%22short_name%22%3A%22%EC%9E%90%EA%B8%B0%EC%86%8C%EA%B0%9C%22%2C%22display%22%3A%22standalone%22%2C%22start_url%22%3A%22.%2Findex.html%22%7D'>
 
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
   
-  <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.1.4/DragDropTouch.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
@@ -401,14 +402,56 @@
       else if (part === 'suffix' && teacherSuffixAudio) new Audio(teacherSuffixAudio).play();
     }
 
+    let draggedElement = null;
+    let draggedIconId = null;
+
     function setupDropZone() {
       const dropZone = document.getElementById('drop-zone');
+      
       dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
       dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
       dropZone.addEventListener('drop', (e) => {
         e.preventDefault(); dropZone.classList.remove('drag-over');
         handleDrop(e.dataTransfer.getData('text/plain'));
       });
+
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd);
+    }
+
+    function handleTouchMove(e) {
+      const touch = e.touches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+
+      if (target && target.closest('.icon-item')) {
+        const iconEl = target.closest('.icon-item');
+        draggedElement = iconEl;
+        draggedIconId = iconEl.getAttribute('data-icon-id');
+      }
+
+      const dropZone = document.getElementById('drop-zone');
+      
+      if (target && (target === dropZone || dropZone.contains(target))) {
+        dropZone.classList.add('drag-over');
+      } else {
+        dropZone.classList.remove('drag-over');
+      }
+    }
+
+    function handleTouchEnd(e) {
+      if (!draggedIconId) return;
+
+      const touch = e.changedTouches[0];
+      const target = document.elementFromPoint(touch.clientX, touch.clientY);
+      const dropZone = document.getElementById('drop-zone');
+
+      if (target && (target === dropZone || dropZone.contains(target))) {
+        handleDrop(draggedIconId);
+      }
+
+      dropZone.classList.remove('drag-over');
+      draggedElement = null;
+      draggedIconId = null;
     }
 
     function handleDrop(iconId) {
@@ -421,7 +464,6 @@
       document.getElementById('dropped-name').textContent = icon.name;
       document.getElementById('drop-zone').classList.add('has-item');
       
-      // 스피커 및 캡처 버튼 활성화
       document.getElementById('speak-btn').disabled = false;
       document.getElementById('capture-btn').disabled = false;
       document.getElementById('reset-btn').style.display = 'block';
@@ -435,7 +477,6 @@
       document.getElementById('drop-placeholder').classList.remove('hidden');
       document.getElementById('dropped-item').classList.add('hidden');
       
-      // 스피커 및 캡처 버튼 비활성화
       document.getElementById('speak-btn').disabled = true;
       document.getElementById('capture-btn').disabled = true;
       document.getElementById('reset-btn').style.display = 'none';
@@ -468,7 +509,6 @@
       } else { await speakText(suffix); }
     }
 
-    // 📸 화면 캡처(이미지 저장) 기능
     async function captureScreen() {
       const captureArea = document.getElementById('capture-area');
       const captureBtn = document.getElementById('capture-btn');
@@ -476,8 +516,8 @@
       try {
         captureBtn.textContent = '⏳ 저장 중...';
         const canvas = await html2canvas(captureArea, {
-          backgroundColor: '#ffffff', // 캡처 시 배경을 흰색으로 고정
-          scale: 2 // 화질을 두 배로 선명하게
+          backgroundColor: '#ffffff',
+          scale: 2
         });
         
         const link = document.createElement('a');
@@ -499,7 +539,7 @@
       document.getElementById('play-recorded-btn').addEventListener('click', playRecordedAudio);
       document.getElementById('close-modal-btn').addEventListener('click', closeRecordModal);
       document.getElementById('speak-btn').addEventListener('click', speakFullSentence);
-      document.getElementById('capture-btn').addEventListener('click', captureScreen); // 캡처 버튼 연결
+      document.getElementById('capture-btn').addEventListener('click', captureScreen);
       document.getElementById('reset-btn').addEventListener('click', resetSelection);
 
       document.getElementById('teacher-panel-btn').addEventListener('click', openTeacherModal);
